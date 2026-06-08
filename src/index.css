@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Full-screen layout reset */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 /* Callout styles */
 .callout {
   @apply border-l-4 rounded-r-lg p-4 my-4;
