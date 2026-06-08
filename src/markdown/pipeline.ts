@@ -4,6 +4,7 @@ import remarkMath from 'remark-math'
 import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeKatex from 'rehype-katex'
+import rehypeHighlight from 'rehype-highlight'
 import rehypeReact from 'rehype-react'
 import { Fragment, type ReactElement } from 'react'
 import * as jsxRuntime from 'react/jsx-runtime'
@@ -21,6 +22,7 @@ function createProcessor() {
     .use(remarkWikiLink)
     .use(remarkCallout)
     .use(remarkRehype)
+    .use(rehypeHighlight)
     .use(rehypeR2Image)
     .use(rehypeKatex)
     .use(rehypeReact, {
