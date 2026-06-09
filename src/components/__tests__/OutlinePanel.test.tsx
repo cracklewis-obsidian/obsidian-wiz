@@ -18,7 +18,6 @@ const mockHeadings: HeadingItem[] = [
 
 describe('OutlinePanel', () => {
   beforeEach(() => {
-    //@ts-expect-error: reset for testing
     useStore.setState(useStore.getInitialState())
   })
 

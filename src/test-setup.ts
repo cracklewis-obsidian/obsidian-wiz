@@ -8,7 +8,7 @@ class MockIntersectionObserver {
 
   constructor(
     private callback: IntersectionObserverCallback,
-    private _options?: IntersectionObserverInit
+    _options?: IntersectionObserverInit
   ) {}
 
   observe(_target: Element) {

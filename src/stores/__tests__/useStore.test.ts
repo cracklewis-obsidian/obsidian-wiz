@@ -4,7 +4,6 @@ import { useStore } from '../useStore'
 describe('useStore outline state', () => {
   beforeEach(() => {
     // Reset store between tests
-    //@ts-expect-error: reset is for testing
     useStore.setState(useStore.getInitialState())
   })
 
