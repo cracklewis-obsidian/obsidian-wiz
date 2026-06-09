@@ -96,7 +96,7 @@ export default function ContentArea() {
       </article>
 
       {/* Desktop outline panel */}
-      <div className="hidden md:block">
+      <div className="hidden md:block sticky top-0 self-start">
         <OutlinePanel
           headings={headings}
           activeId={activeId}
