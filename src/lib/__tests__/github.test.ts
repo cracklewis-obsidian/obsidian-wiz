@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildNestedTree } from '../github'
+import { buildNestedTree, buildNameIndex } from '../github'
 
 describe('buildNestedTree', () => {
   const flatItems = [
@@ -41,5 +41,57 @@ describe('buildNestedTree', () => {
 
   it('returns empty array for empty input', () => {
     expect(buildNestedTree([])).toEqual([])
+  })
+})
+
+describe('buildNameIndex', () => {
+  const flatItems = [
+    { path: 'README.md', mode: '100644', type: 'blob' as const, sha: 'a', url: '' },
+    { path: '项目A', mode: '040000', type: 'tree' as const, sha: 'b', url: '' },
+    { path: '项目A/需求.md', mode: '100644', type: 'blob' as const, sha: 'c', url: '' },
+    { path: '项目A/方案.md', mode: '100644', type: 'blob' as const, sha: 'd', url: '' },
+    { path: '项目A/子目录', mode: '040000', type: 'tree' as const, sha: 'e', url: '' },
+    { path: '项目A/子目录/细节.md', mode: '100644', type: 'blob' as const, sha: 'f', url: '' },
+    { path: 'AI', mode: '040000', type: 'tree' as const, sha: 'g', url: '' },
+    { path: 'AI/AI名词词典.md', mode: '100644', type: 'blob' as const, sha: 'h', url: '' },
+    { path: '附件/diagram.png', mode: '100644', type: 'blob' as const, sha: 'i', url: '' },
+  ]
+
+  it('builds a name-to-path map from the tree', () => {
+    const tree = buildNestedTree(flatItems)
+    const index = buildNameIndex(tree)
+
+    expect(index.get('readme')).toBe('README')
+    expect(index.get('需求')).toBe('项目A/需求')
+    expect(index.get('方案')).toBe('项目A/方案')
+    expect(index.get('细节')).toBe('项目A/子目录/细节')
+    expect(index.get('ai名词词典')).toBe('AI/AI名词词典')
+  })
+
+  it('excludes non-md files from the index', () => {
+    const tree = buildNestedTree(flatItems)
+    const index = buildNameIndex(tree)
+
+    expect(index.has('diagram')).toBe(false)
+    expect(index.has('附件')).toBe(false)
+  })
+
+  it('handles duplicate names by keeping the first encountered in DFS walk', () => {
+    const items = [
+      ...flatItems,
+      { path: '项目A/重复笔记.md', mode: '100644', type: 'blob' as const, sha: 'y', url: '' },
+      { path: '重复笔记.md', mode: '100644', type: 'blob' as const, sha: 'x', url: '' },
+    ]
+    const tree = buildNestedTree(items)
+    const index = buildNameIndex(tree)
+
+    // DFS traversal visits 项目A's children before root-level 重复笔记.md,
+    // so 项目A/重复笔记 is encountered first
+    expect(index.get('重复笔记')).toBe('项目A/重复笔记')
+  })
+
+  it('returns empty map for empty tree', () => {
+    const index = buildNameIndex([])
+    expect(index.size).toBe(0)
   })
 })

@@ -129,3 +129,22 @@ async function fetchWithRetry(url: string, retriesLeft: number): Promise<string>
 export function clearTreeCache(): void {
   removeFromCache(CACHE_KEY)
 }
+
+export function buildNameIndex(tree: TreeNode[]): Map<string, string> {
+  const index = new Map<string, string>()
+
+  function walk(nodes: TreeNode[]) {
+    for (const node of nodes) {
+      if (node.type === 'blob' && node.path.endsWith('.md')) {
+        const name = node.name.replace(/\.md$/i, '').toLowerCase()
+        if (!index.has(name)) {
+          index.set(name, node.path.replace(/\.md$/i, ''))
+        }
+      }
+      if (node.children) walk(node.children)
+    }
+  }
+
+  walk(tree)
+  return index
+}
