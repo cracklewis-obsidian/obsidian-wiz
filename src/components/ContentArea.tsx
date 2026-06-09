@@ -129,7 +129,7 @@ export default function ContentArea() {
               items={headings}
               activeId={activeId}
               onHeadingClick={(id) => {
-                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
                 toggleOutline()
               }}
             />

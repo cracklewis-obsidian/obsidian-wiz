@@ -32,7 +32,7 @@ export default function OutlinePanel({
   const handleHeadingClick = (id: string) => {
     onHeadingClick?.(id)
     const el = document.getElementById(id)
-    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }
 
   return (
