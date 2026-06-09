@@ -44,7 +44,7 @@ function isImageLink(target: string): boolean {
   return target.startsWith(ATTACHMENT_PREFIX) || IMAGE_EXTENSIONS.test(target)
 }
 
-export function remarkWikiLink() {
+export function remarkWikiLink(nameIndex?: Map<string, string>) {
   return (tree: Root) => {
     visit(tree, 'paragraph', (
       node: Paragraph,
@@ -79,7 +79,7 @@ export function remarkWikiLink() {
                   alt: displayText || target.split('/').pop() || target,
                 } as Image)
               } else {
-                const linkPath = target.replace(/\.md$/i, '')
+                const linkPath = resolveWikiLink(target, nameIndex)
                 newChildren.push({
                   type: 'link',
                   url: `#/${linkPath}`,
@@ -105,4 +105,15 @@ export function remarkWikiLink() {
       }
     })
   }
+}
+
+function resolveWikiLink(target: string, nameIndex?: Map<string, string>): string {
+  if (!nameIndex) return target.replace(/\.md$/i, '')
+
+  const lookup = target.toLowerCase().replace(/\.md$/i, '')
+  const resolved = nameIndex.get(lookup)
+  if (resolved) return resolved
+
+  // Fall back to direct path
+  return target.replace(/\.md$/i, '')
 }

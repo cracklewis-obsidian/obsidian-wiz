@@ -72,3 +72,43 @@ describe('remarkWikiLink', () => {
     expect(result).toContain('外部链接')
   })
 })
+
+describe('remarkWikiLink with nameIndex', () => {
+  const nameIndex = new Map<string, string>([
+    ['ai名词词典', 'AI/AI名词词典'],
+    ['需求', '项目A/需求'],
+    ['重复笔记', '项目A/重复笔记'],
+  ])
+
+  function processWithIndex(text: string) {
+    const result = unified()
+      .use(remarkParse)
+      .use(remarkWikiLink, nameIndex)
+      .use(remarkRehype)
+      .use(rehypeStringify)
+      .processSync(text)
+    return String(result)
+  }
+
+  it('resolves [[笔记名]] using nameIndex', () => {
+    const result = processWithIndex('参考 [[AI名词词典]]')
+    expect(result).toContain(encodeURI('#/AI/AI名词词典'))
+  })
+
+  it('falls back to direct path when name is not in index', () => {
+    const result = processWithIndex('参考 [[不存在的笔记]]')
+    expect(result).toContain(encodeURI('#/不存在的笔记'))
+  })
+
+  it('resolves [[目标|显示名]] with nameIndex', () => {
+    const result = processWithIndex('参考 [[AI名词词典|AI词典]]')
+    expect(result).toContain(encodeURI('#/AI/AI名词词典'))
+    expect(result).toContain('>AI词典<')
+  })
+
+  it('does not affect image wiki links', () => {
+    const result = processWithIndex('图示 [[附件/diagram.png]]')
+    expect(result).toContain('<img')
+    expect(result).not.toContain(encodeURI('#/'))
+  })
+})
