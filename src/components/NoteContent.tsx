@@ -1,13 +1,14 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useStore } from '../stores/useStore'
 import { renderMarkdown } from '../markdown/pipeline'
 import { buildNameIndex } from '../lib/github'
 
 interface NoteContentProps {
   content: string
+  headingAnchor?: string | null
 }
 
-export default function NoteContent({ content }: NoteContentProps) {
+export default function NoteContent({ content, headingAnchor }: NoteContentProps) {
   const tree = useStore((s) => s.tree)
 
   const nameIndex = useMemo(() => {
@@ -18,6 +19,15 @@ export default function NoteContent({ content }: NoteContentProps) {
     () => renderMarkdown(content, nameIndex),
     [content, nameIndex]
   )
+
+  // Scroll to heading anchor after render
+  useEffect(() => {
+    if (headingAnchor) {
+      requestAnimationFrame(() => {
+        document.getElementById(headingAnchor)?.scrollIntoView({ behavior: 'smooth' })
+      })
+    }
+  }, [headingAnchor])
 
   if (!rendered) {
     return (

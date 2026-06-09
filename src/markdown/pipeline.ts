@@ -11,6 +11,7 @@ import * as jsxRuntime from 'react/jsx-runtime'
 import { remarkWikiLink } from './remark-wiki-link'
 import { remarkCallout } from './remark-callout'
 import { rehypeR2Image } from './rehype-r2-image'
+import { rehypeHeadingId } from './rehype-heading-id'
 
 export function renderMarkdown(
   content: string,
@@ -25,6 +26,7 @@ export function renderMarkdown(
       .use(remarkCallout)
       .use(remarkRehype)
       .use(rehypeHighlight)
+      .use(rehypeHeadingId)
       .use(rehypeR2Image)
       .use(rehypeKatex)
       .use(rehypeReact, {

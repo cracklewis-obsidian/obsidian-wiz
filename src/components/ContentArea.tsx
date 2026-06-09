@@ -10,7 +10,21 @@ import NoteNotFound from './NoteNotFound'
 
 export default function ContentArea() {
   const { '*': path } = useParams()
-  const resolvedPath = path || null
+  const fullPath = path || null
+
+  // Parse heading anchor if present (e.g., "AI/强化学习理论/01-强化学习基础#贝尔曼期望方程")
+  let resolvedPath: string | null = null
+  let headingAnchor: string | null = null
+
+  if (fullPath) {
+    const hashIndex = fullPath.indexOf('#')
+    if (hashIndex >= 0) {
+      resolvedPath = fullPath.slice(0, hashIndex)
+      headingAnchor = fullPath.slice(hashIndex + 1)
+    } else {
+      resolvedPath = fullPath
+    }
+  }
 
   const notePath = resolvedPath
     ? resolvedPath.endsWith('.md')
@@ -64,7 +78,7 @@ export default function ContentArea() {
   // Success — render note
   return (
     <article className="max-w-4xl mx-auto p-6 md:p-10">
-      <NoteContent content={content || ''} />
+      <NoteContent content={content || ''} headingAnchor={headingAnchor} />
     </article>
   )
 }
