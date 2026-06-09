@@ -113,15 +113,15 @@ describe('remarkWikiLink with nameIndex', () => {
     expect(result).not.toContain(encodeURI('#/'))
   })
 
-  it('resolves [[笔记名#标题]] with heading anchor preserved', () => {
+  it('resolves [[笔记名#标题]] with heading anchor in query param', () => {
     const result = processWithIndex('参考 [[01-强化学习基础#贝尔曼期望方程]]')
-    expect(result).toContain(encodeURI('#/AI/强化学习理论/01-强化学习基础'))
-    expect(result).toContain('#%E8%B4%9D%E5%B0%94%E6%9B%BC%E6%9C%9F%E6%9C%9B%E6%96%B9%E7%A8%8B')
+    expect(result).toContain(encodeURI('#/AI/强化学习理论/01-强化学习基础?heading='))
+    expect(result).toContain('heading=%E8%B4%9D%E5%B0%94%E6%9B%BC%E6%9C%9F%E6%9C%9B%E6%96%B9%E7%A8%8B')
   })
 
   it('falls back for [[笔记名#标题]] when note not in index', () => {
     const result = processWithIndex('参考 [[不存在的笔记#某个标题]]')
-    expect(result).toContain(encodeURI('#/不存在的笔记'))
-    expect(result).toContain('#%E6%9F%90%E4%B8%AA%E6%A0%87%E9%A2%98')
+    expect(result).toContain(encodeURI('#/不存在的笔记?heading='))
+    expect(result).toContain('heading=%E6%9F%90%E4%B8%AA%E6%A0%87%E9%A2%98')
   })
 })

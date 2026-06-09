@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { useStore } from '../stores/useStore'
 import { useNote } from '../hooks/useNote'
 import { useEffect } from 'react'
@@ -10,21 +10,9 @@ import NoteNotFound from './NoteNotFound'
 
 export default function ContentArea() {
   const { '*': path } = useParams()
-  const fullPath = path || null
-
-  // Parse heading anchor if present (e.g., "AI/强化学习理论/01-强化学习基础#贝尔曼期望方程")
-  let resolvedPath: string | null = null
-  let headingAnchor: string | null = null
-
-  if (fullPath) {
-    const hashIndex = fullPath.indexOf('#')
-    if (hashIndex >= 0) {
-      resolvedPath = fullPath.slice(0, hashIndex)
-      headingAnchor = fullPath.slice(hashIndex + 1)
-    } else {
-      resolvedPath = fullPath
-    }
-  }
+  const [searchParams] = useSearchParams()
+  const resolvedPath = path || null
+  const headingAnchor = searchParams.get('heading') || null
 
   const notePath = resolvedPath
     ? resolvedPath.endsWith('.md')

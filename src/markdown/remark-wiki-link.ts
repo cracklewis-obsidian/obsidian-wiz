@@ -79,10 +79,13 @@ export function remarkWikiLink(nameIndex?: Map<string, string>) {
                   alt: displayText || target.split('/').pop() || target,
                 } as Image)
               } else {
-                const linkPath = resolveWikiLink(target, nameIndex)
+                const { linkPath, headingAnchor } = resolveWikiLink(target, nameIndex)
+                const url = headingAnchor
+                  ? `#/${linkPath}?heading=${encodeURIComponent(headingAnchor)}`
+                  : `#/${linkPath}`
                 newChildren.push({
                   type: 'link',
-                  url: `#/${linkPath}`,
+                  url,
                   children: [{ type: 'text', value: displayText || linkPath.split('/').pop() || linkPath }],
                 })
               }
@@ -107,18 +110,20 @@ export function remarkWikiLink(nameIndex?: Map<string, string>) {
   }
 }
 
-function resolveWikiLink(target: string, nameIndex?: Map<string, string>): string {
+function resolveWikiLink(
+  target: string,
+  nameIndex?: Map<string, string>
+): { linkPath: string; headingAnchor: string | null } {
   // Split off any heading anchor (e.g., "笔记名#标题" → "笔记名" + "#标题")
   const hashIndex = target.indexOf('#')
   const baseTarget = hashIndex >= 0 ? target.slice(0, hashIndex) : target
-  const headingAnchor = hashIndex >= 0 ? target.slice(hashIndex) : ''
+  const heading = hashIndex >= 0 ? target.slice(hashIndex + 1) : null
 
-  if (!nameIndex) return baseTarget.replace(/\.md$/i, '') + headingAnchor
+  if (!nameIndex) return { linkPath: baseTarget.replace(/\.md$/i, ''), headingAnchor: heading }
 
   const lookup = baseTarget.toLowerCase().replace(/\.md$/i, '')
   const resolved = nameIndex.get(lookup)
-  if (resolved) return resolved + headingAnchor
+  if (resolved) return { linkPath: resolved, headingAnchor: heading }
 
-  // Fall back to direct path
-  return baseTarget.replace(/\.md$/i, '') + headingAnchor
+  return { linkPath: baseTarget.replace(/\.md$/i, ''), headingAnchor: heading }
 }
