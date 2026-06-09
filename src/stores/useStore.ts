@@ -17,6 +17,8 @@ interface AppStore {
   searchQuery: string
   sidebarCollapsed: boolean
   expandedFolders: Set<string>
+  outlineCollapsed: boolean
+  _outlineAutoCollapsed: boolean
 
   // Actions
   setTree: (tree: TreeNode[] | null) => void
@@ -31,6 +33,8 @@ interface AppStore {
   setSidebarCollapsed: (collapsed: boolean) => void
   toggleFolder: (path: string) => void
   expandFolder: (path: string) => void
+  toggleOutline: () => void
+  setOutlineCollapsed: (collapsed: boolean, isAuto?: boolean) => void
 }
 
 export const useStore = create<AppStore>((set) => ({
@@ -49,6 +53,8 @@ export const useStore = create<AppStore>((set) => ({
   searchQuery: '',
   sidebarCollapsed: false,
   expandedFolders: new Set<string>(),
+  outlineCollapsed: JSON.parse(localStorage.getItem('ow-outline-collapsed') ?? 'false'),
+  _outlineAutoCollapsed: false,
 
   // Tree actions
   setTree: (tree) => set({ tree }),
@@ -83,5 +89,19 @@ export const useStore = create<AppStore>((set) => ({
       const next = new Set(state.expandedFolders)
       next.add(path)
       return { expandedFolders: next }
+    }),
+
+  toggleOutline: () =>
+    set((state) => {
+      const next = !state.outlineCollapsed
+      localStorage.setItem('ow-outline-collapsed', JSON.stringify(next))
+      return { outlineCollapsed: next, _outlineAutoCollapsed: false }
+    }),
+
+  setOutlineCollapsed: (collapsed, isAuto) =>
+    set((state) => {
+      if (collapsed === state.outlineCollapsed && state._outlineAutoCollapsed === !!isAuto) return state
+      localStorage.setItem('ow-outline-collapsed', JSON.stringify(collapsed))
+      return { outlineCollapsed: collapsed, _outlineAutoCollapsed: !!isAuto }
     }),
 }))
