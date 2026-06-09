@@ -106,4 +106,24 @@ describe('useOutline', () => {
     expect(result.current.headings).toHaveLength(1)
     expect(result.current.headings[0].children).toHaveLength(0)
   })
+
+  it('re-extracts headings when enabled transitions from false to true', () => {
+    const div = document.createElement('div')
+    div.className = 'note-content'
+    div.innerHTML = '<h1 id="initial">Initial</h1>'
+    document.body.appendChild(div)
+    const ref = { current: div }
+
+    // Start with enabled=false
+    const { result, rerender } = renderHook(
+      (opts?: { enabled?: boolean }) => useOutline(ref, opts),
+      { initialProps: { enabled: false } }
+    )
+    expect(result.current.headings).toHaveLength(0)
+
+    // Now enable (simulating content loaded)
+    rerender({ enabled: true })
+    expect(result.current.headings).toHaveLength(1)
+    expect(result.current.headings[0].text).toBe('Initial')
+  })
 })

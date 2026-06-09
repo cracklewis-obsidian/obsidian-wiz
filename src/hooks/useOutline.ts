@@ -106,8 +106,13 @@ export function useOutline(
   }, [contentRef])
 
   useEffect(() => {
-    extract()
-  }, [extract])
+    if (options?.enabled ?? true) {
+      extract()
+    } else {
+      setHeadings([])
+      setActiveId(null)
+    }
+  }, [extract, options?.enabled])
 
   // IntersectionObserver for scroll tracking
   useEffect(() => {
