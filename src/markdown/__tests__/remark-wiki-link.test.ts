@@ -78,6 +78,7 @@ describe('remarkWikiLink with nameIndex', () => {
     ['ai名词词典', 'AI/AI名词词典'],
     ['需求', '项目A/需求'],
     ['重复笔记', '项目A/重复笔记'],
+    ['01-强化学习基础', 'AI/强化学习理论/01-强化学习基础'],
   ])
 
   function processWithIndex(text: string) {
@@ -110,5 +111,17 @@ describe('remarkWikiLink with nameIndex', () => {
     const result = processWithIndex('图示 [[附件/diagram.png]]')
     expect(result).toContain('<img')
     expect(result).not.toContain(encodeURI('#/'))
+  })
+
+  it('resolves [[笔记名#标题]] with heading anchor preserved', () => {
+    const result = processWithIndex('参考 [[01-强化学习基础#贝尔曼期望方程]]')
+    expect(result).toContain(encodeURI('#/AI/强化学习理论/01-强化学习基础'))
+    expect(result).toContain('#%E8%B4%9D%E5%B0%94%E6%9B%BC%E6%9C%9F%E6%9C%9B%E6%96%B9%E7%A8%8B')
+  })
+
+  it('falls back for [[笔记名#标题]] when note not in index', () => {
+    const result = processWithIndex('参考 [[不存在的笔记#某个标题]]')
+    expect(result).toContain(encodeURI('#/不存在的笔记'))
+    expect(result).toContain('#%E6%9F%90%E4%B8%AA%E6%A0%87%E9%A2%98')
   })
 })

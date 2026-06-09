@@ -108,12 +108,17 @@ export function remarkWikiLink(nameIndex?: Map<string, string>) {
 }
 
 function resolveWikiLink(target: string, nameIndex?: Map<string, string>): string {
-  if (!nameIndex) return target.replace(/\.md$/i, '')
+  // Split off any heading anchor (e.g., "笔记名#标题" → "笔记名" + "#标题")
+  const hashIndex = target.indexOf('#')
+  const baseTarget = hashIndex >= 0 ? target.slice(0, hashIndex) : target
+  const headingAnchor = hashIndex >= 0 ? target.slice(hashIndex) : ''
 
-  const lookup = target.toLowerCase().replace(/\.md$/i, '')
+  if (!nameIndex) return baseTarget.replace(/\.md$/i, '') + headingAnchor
+
+  const lookup = baseTarget.toLowerCase().replace(/\.md$/i, '')
   const resolved = nameIndex.get(lookup)
-  if (resolved) return resolved
+  if (resolved) return resolved + headingAnchor
 
   // Fall back to direct path
-  return target.replace(/\.md$/i, '')
+  return baseTarget.replace(/\.md$/i, '') + headingAnchor
 }
