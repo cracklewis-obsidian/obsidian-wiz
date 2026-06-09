@@ -1,12 +1,23 @@
 import { useMemo } from 'react'
+import { useStore } from '../stores/useStore'
 import { renderMarkdown } from '../markdown/pipeline'
+import { buildNameIndex } from '../lib/github'
 
 interface NoteContentProps {
   content: string
 }
 
 export default function NoteContent({ content }: NoteContentProps) {
-  const rendered = useMemo(() => renderMarkdown(content), [content])
+  const tree = useStore((s) => s.tree)
+
+  const nameIndex = useMemo(() => {
+    return tree ? buildNameIndex(tree) : new Map<string, string>()
+  }, [tree])
+
+  const rendered = useMemo(
+    () => renderMarkdown(content, nameIndex),
+    [content, nameIndex]
+  )
 
   if (!rendered) {
     return (
