@@ -37,11 +37,11 @@ export default function OutlinePanel({
 
   return (
     <aside
-      className={`flex-shrink-0 border-l border-gray-200 bg-gray-50/80 overflow-hidden transition-all duration-200 ease-in-out ${
+      className={`flex-shrink-0 border-l border-gray-200 bg-gray-50/80 overflow-hidden transition-all duration-200 ease-in-out h-full flex flex-col ${
         outlineCollapsed ? 'w-0 border-l-0' : 'w-56'
       }`}
     >
-      <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-100">
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-100 flex-shrink-0">
         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
           大纲
         </span>
@@ -56,7 +56,7 @@ export default function OutlinePanel({
         </button>
       </div>
 
-      <div className="overflow-y-auto py-2" style={{ maxHeight: 'calc(100vh - 120px)' }}>
+      <div className="overflow-y-auto py-2 flex-1 min-h-0">
         {headings.length > 0 ? (
           <OutlineTree
             items={headings}
