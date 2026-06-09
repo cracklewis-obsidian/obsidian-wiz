@@ -12,32 +12,28 @@ import { remarkWikiLink } from './remark-wiki-link'
 import { remarkCallout } from './remark-callout'
 import { rehypeR2Image } from './rehype-r2-image'
 
-let processor: ReturnType<typeof createProcessor> | null = null
-
-function createProcessor() {
-  return unified()
-    .use(remarkParse)
-    .use(remarkMath)
-    .use(remarkGfm)
-    .use(remarkWikiLink)
-    .use(remarkCallout)
-    .use(remarkRehype)
-    .use(rehypeHighlight)
-    .use(rehypeR2Image)
-    .use(rehypeKatex)
-    .use(rehypeReact, {
-      Fragment,
-      jsx: jsxRuntime.jsx,
-      jsxs: jsxRuntime.jsxs,
-    })
-}
-
-export function renderMarkdown(content: string): ReactElement | null {
+export function renderMarkdown(
+  content: string,
+  nameIndex?: Map<string, string>
+): ReactElement | null {
   try {
-    if (!processor) {
-      processor = createProcessor()
-    }
-    const result = processor.processSync(content)
+    const result = unified()
+      .use(remarkParse)
+      .use(remarkMath)
+      .use(remarkGfm)
+      .use(remarkWikiLink, nameIndex)
+      .use(remarkCallout)
+      .use(remarkRehype)
+      .use(rehypeHighlight)
+      .use(rehypeR2Image)
+      .use(rehypeKatex)
+      .use(rehypeReact, {
+        Fragment,
+        jsx: jsxRuntime.jsx,
+        jsxs: jsxRuntime.jsxs,
+      })
+      .processSync(content)
+
     return result.result as ReactElement
   } catch (err) {
     console.error('Markdown rendering failed:', err)
